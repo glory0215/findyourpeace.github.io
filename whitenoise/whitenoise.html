@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>whitenoise——find your peace</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .back_video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -9999;
+        }
+
+        p {
+            color: white
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <video autoplay muted loop class="back_video" id="back">
+        <source src="../Resource/bg.mp4" type="video/mp4">
+    </video>
+    <div style="text-align: center;" id="0">
+        <img src="./music_tittle.png" arc="title" width="200px">
+    </div>
+    <div id="1">
+        <p class="center-box">
+            解 压 白 噪 声
+        </p>
+    </div>
+    <div style="text-align: right;">
+        <button onclick="changestyle()" style="font-size: 20px;" id="button">
+            隐藏界面
+        </button>
+        <div>
+            <p></p>
+        </div>
+    </div>
+    <div class="container">
+        <img src="rain.jpg" width="200px" id="2">
+        <div id="3">
+            <p>现在天色渐暗，你的前面是高山，细雨绵绵。
+                你正走向那里，风很舒服，你很安全……</p>
+            <audio controls loop id="audio_rain">
+                <source src="./rain.mp3" type="audio/mp3">
+            </audio>
+            <script>
+                const audioElement1 = document.getElementById('audio_rain');
+                // 当音频播放时，改变背景图片
+                audioElement1.addEventListener('play', function () {
+                    document.getElementById('audio_seawaves').pause();
+                    document.getElementById('audio_forest').pause();
+                    document.getElementById('audio_wind').pause();
+                    document.getElementById("back").src = "../Resource/rain.mp4";
+                });
+            </script>
+        </div>
+    </div>
+    <div>
+        <p></p>
+    </div>
+    <div class="container">
+        <img src="seawaves.jpg" width="200px" id="4">
+        <div id="5">
+            <p>现在你的面前是阳光与沙滩，海浪往复拍打着。
+                你感到一阵放松，只想与大海融为一体......
+            </p>
+            <audio controls loop id="audio_seawaves">
+                <source src="./seawaves.mp3" type="audio/mp3">
+            </audio>
+            <script>
+                const audioElement2 = document.getElementById('audio_seawaves');
+                // 当音频播放时，改变背景图片
+                audioElement2.addEventListener('play', function () {
+                    document.getElementById('audio_rain').pause();
+                    document.getElementById('audio_forest').pause();
+                    document.getElementById('audio_wind').pause();
+                    document.getElementById("back").src = "../Resource/beach.mp4";
+                });
+            </script>
+        </div>
+    </div>
+    <div>
+        <p></p>
+    </div>
+    <div class="container">
+        <img src="forest.jpg" width="200px" id="6">
+        <div id="7">
+            <p>现在你来到了一处森林，这里沐浴着阳光，树荫遍地。
+                你听到了婉转的鸟鸣，你感到了清风拂面。
+                你闭上了眼......
+            </p>
+            <audio controls loop id="audio_forest">
+                <source src="./forest.mp3" type="audio/mp3">
+            </audio>
+            <script>
+                const audioElement3 = document.getElementById('audio_forest');
+                // 当音频播放时，改变背景图片
+                audioElement3.addEventListener('play', function () {
+                    document.getElementById('audio_seawaves').pause();
+                    document.getElementById('audio_rain').pause();
+                    document.getElementById('audio_wind').pause();
+                    document.getElementById("back").src = "../Resource/bird.mp4";
+                });
+            </script>
+        </div>
+    </div>
+    <div>
+        <p></p>
+    </div>
+    <div class="container">
+        <img src="wind.jpg" width="200px" id="8">
+        <div id="9">
+            <p>现在已是深秋，你漫步在金黄的小道上，听着风声穿过树林之中。
+                你靠在一颗树旁坐下了......
+            </p>
+            <audio controls loop id="audio_wind">
+                <source src="./wind.mp3" type="audio/mp3">
+            </audio>
+            <script>
+                const audioElement4 = document.getElementById('audio_wind');
+                // 当音频播放时，改变背景图片
+                audioElement4.addEventListener('play', function () {
+                    document.getElementById('audio_seawaves').pause();
+                    document.getElementById('audio_forest').pause();
+                    document.getElementById('audio_rain').pause();
+                    document.getElementById("back").src = "../Resource/fall.mp4";
+                });
+            </script>
+        </div>
+    </div>
+    <div>
+        <p></p>
+    </div>
+    <div style="
+    font-size: 12px;
+    color:rgb(187, 92, 92);
+    text-align: center;
+    line-height: 10px;" id="10">
+        <a href="../pet.html" style="padding: 5px;background-color: whitesmoke;">返回</a>
+        <p style="
+    font-size: 20px;
+    color: azure;">find your peace</p>
+
+    </div>
+    <script>
+        function changestyle() {
+            var but = document.getElementById('button')
+            if (but.innerText == '隐藏界面')
+                but.innerText = '显示界面'
+            else
+                but.innerText = '隐藏界面'
+            for (var i = 0; i <= 10; i++) {
+                var x = document.getElementById(i);
+                if (x.hidden == false)
+                    x.hidden = true;
+                else
+                    x.hidden = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

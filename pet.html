@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>pet</title>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -9999;
+        }
+
+        audio {
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <video autoplay loop muted style="width: 100%">
+        <source src="./Resource/bg.mp4" />
+    </video>
+    <audio autoplay="autoplay" controls="controls" loop="loop" preload="auto" src="./Resource/music.mp3">
+    </audio>
+    <script type="text/javascript" src="./quotes.js"></script>
+    <div id="pet"></div>
+    <script src="http://qiniu.oorzc.cn/pet/js/pet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript">
+        async function callOpenAIAPI(userMessage, retryCount = 3) {
+            const url = 'https://api.openai-hk.com/v1/chat/completions';
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'hk-b5ebou100003455862bf0a7c7fb6b97e2ced83b921dc454d'
+            };
+
+            const data = {
+                max_tokens: 1200,
+                model: 'gpt-3.5-turbo',
+                temperature: 0.8,
+                top_p: 1,
+                presence_penalty: 1,
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.'
+                    },
+                    {
+                        role: 'user',
+                        content: userMessage
+                    }
+                ]
+            };
+
+            for (let attempt = 0; attempt < retryCount; attempt++) {
+                try {
+                    const response = await axios.post(url, data, { headers });
+                    return response.data.choices[0].message.content;
+                } catch (error) {
+                    if (error.response && error.response.status === 429) {
+                        console.warn('Rate limit exceeded, retrying in 1 second...');
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒后重试
+                    } else {
+                        console.error('Error calling OpenAI API:', error);
+                        throw new Error('对不起，我无法处理你的请求。');
+                    }
+                }
+            }
+            throw new Error('对不起，请求次数过多，请稍后再试。');
+        }
+    </script>
+    <script>
+        var opt = {
+            drag: true,
+            showChat: true,
+            //themeUrl: "./pet.less", //自定义主题less文件链接 使用themeUrl下面的color会失效
+            color: "brown",
+            size: "auto",
+            showText : "主人，你来了！",
+            menu: {
+                $title: '主人，你想做什么呢？',
+                //'关于小精灵': function () {
+                //    window.open("https://www.npmjs.com/package/pet2");
+                //},
+                //'多久没洗澡': '(╯﹏╰）我已经有 ' + Math.floor((+new Date - 1456998485780) / (1000 * 60 * 60 * 24)) + '天没洗澡了~',
+                
+                '拍打喂食': {
+                    $title: '要来点什么呢？',
+                    '小饼干': '嗷呜~ 多谢款待  >ω<',
+                    '胡萝卜': '人家又不是小兔子 QwQ',
+                    
+                },
+                '解答问题': ["你想问什么呢？", async (val, done) => {
+                    try {
+                        const response = await callOpenAIAPI(val);
+                        pet.sayWords(response);
+                    } catch (error) {
+                        pet.sayWords(error.message);
+                    } finally {
+                        done(); // 确保在异步操作完成后关闭对话框
+                    }
+                }],
+                '白噪声': function () {
+                    window.location.href = './whitenoise/whitenoise.html'
+                },
+                '励志语录': quotes[Math.floor(Math.random() * quotes.length)],
+                '翻开答案之书': function () {
+                    $.ajax({
+                    url: 'https://www.freeapis.cn/api/yulu/daan',
+                    data: {
+                        key: 'jWJCiIRrGWMu7xOczQuphpeek6', // API密钥
+                    },
+                    type: 'GET', // 请求协议（GET或POST）
+                    dataType: 'text', // 返回的数据类型
+                    success: function(data) {
+                        console.log(data); // 请求成功，输出结果到控制台
+                        pet.sayWords(data); // 输出结果到页面
+                    },
+                    timeout: 3000, // 超时时间（毫秒）
+                    error: function(xhr, status, error) {
+                        console.log('请求失败'); // 失败处理
+                        console.log('状态：', status); // 输出状态
+                        console.log('错误：', error); // 输出错误
+                        pet.sayWords('请求失败: ' + error);
+                        //$('#output').text(data)
+                    }
+                })
+                    
+                },
+                //'说出一段话2': function () {
+                //    pet.sayWords("我是聊天内容2");
+                //},
+                /*'无限级菜单': {
+                    $title: "我是第二级进入标题",
+                    第二级功能: function () {
+                        alert("我是第二级")
+                    },
+                    第三级: {
+                        $title: "我是第三级进入标题",
+                        第四级: {
+                            $title: "我是第四级进入标题",
+                            第五级: "我是第五级内容",
+                        },
+                    },
+                },*/
+                
+                '改变大小': {
+                    $title: "变变变",
+                    "超大": function () {
+                        pet.changeSize("large");
+                        
+                    },
+                    "大": function () {
+                        pet.changeSize("big");
+                    },
+                    "正常": function () {
+                        pet.changeSize("small");
+                    },
+                    "小": function () {
+                        pet.changeSize("mini");
+                    },
+                },
+                '改变颜色': {
+                    $title: "变变变",
+                    "蓝色": function () {
+                        pet.changeColor("blue");
+                    },
+                    "绿色": function () {
+                        pet.changeColor("green");
+                    },
+                    "黄色": function () {
+                        pet.changeColor("yellow");
+                    },
+                    "红色": function () {
+                        pet.changeColor("red");
+                    },
+                    "紫色": function () {
+                        pet.changeColor("purple");
+                    },
+                    "粉色": function () {
+                        pet.changeColor("pink");
+                    },
+                    "黑色": function () {
+                        pet.changeColor("black");
+                    },
+                    "棕色": function () {
+                        pet.changeColor("brown");
+                    },
+
+                },
+                '还原设置': {
+                    $title: "你想还原哪项设置？",
+                    所有: function () {
+                        pet.clearAll();
+                        pet.sayWords("操作成功");
+                    },
+                    大小: function () {
+                        pet.clearAll("size");
+                        pet.sayWords("操作成功");
+                    },
+                    颜色: function () {
+                        pet.clearAll("color");
+                        pet.sayWords("操作成功");
+                    },
+                    位置: function () {
+                        pet.clearAll("pos");
+                        pet.sayWords("操作成功");
+                    },
+                },
+                '隐藏小精灵': function () {
+                    pet.hide();
+                },
+            },
+            /*words: [
+                "我们一起聊天吧 ヽ(✿ﾟ▽ﾟ)ノ",
+                "咦你想说什么 oAo ?",
+                //"o(╯□╰)o主人你今天是不是忘记吃药了！",
+                //"你走，我没有你这么蠢的主人╮(╯▽╰)╭",
+                "不要调戏我，我生气超凶的٩(๑`^´๑)۶",
+                "看什么看，没见过这么可爱的的小精灵吗？(o°ω°o)",
+                "咕~~(╯﹏╰)b，铲屎的，我已经很久没吃好吃的了，你看着办！",
+            ]*/
+        };
+        pet.init(opt);
+    </script>
+</body>
+
+</html>
